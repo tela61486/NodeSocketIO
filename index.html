@@ -1,0 +1,63 @@
+<!-- The index.html file is sent by the Node.js server
+    This file will contain some JavaScript that will allow real-time
+    communication with the server via socket.io
+
+
+
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Socket.io</title>
+    </head>
+
+    <body>
+        <h1>Communication with socket.io!</h1>
+
+        <!-- Adding a Button to click-->
+        <p><input type="button" value="Poke the Server" id="poke"/></p>
+        <p><ul id="Pokers"></ul></p>
+        
+        <!-- Have to retrieve the JQuery scripts -->
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        
+        <!-- First we retrieve the socket.io.js file from the client
+             It is automatically provided by the Node.js server via the socket.io
+             module. The code it contains enables management of communication with
+             the server on the client side.-->
+        <script src="/socket.io/socket.io.js"></script>
+
+        <!-- Now we have to carry out actions on the client side to communicate with
+             the server. We are just connecting to the server.
+        -->
+        <script>
+            var socket = io.connect("http://localhost:8080");
+            
+            // Now we are going to listen for a new user to connect 
+            socket.on('connect',function(){
+                socket.send("A New User is connected")
+                
+            })
+
+            // Now using socket.on() we are going to listen for "message" type messages 
+            // on the client side(index.html), when a message arrives we call the callback
+            // function. 
+            
+            socket.on("message", function(message){
+                alert("the server has a message for you: "+message);
+                $('#Pokers').append("<li>User has Poked<li>");
+                console.log("Received a meesage from the Server")
+            });
+
+            // The Client wants to Send a Message to the Server
+            // We are going to add a button in the web page that sends a message to the server
+            // when its clicked on.
+            // We will use JQuery syntax to retrieve the event of the click of the button
+            $('#poke').click(function() {
+                socket.emit('message','Hi Server, how are you?');
+            });
+        </script>
+    </body>
+</html>
